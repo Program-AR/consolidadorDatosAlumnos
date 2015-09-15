@@ -6,33 +6,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>JS-XLS Live Demo</title>
 <style>
-#drop{
-	border:2px dashed #bbb;
-	-moz-border-radius:5px;
-	-webkit-border-radius:5px;
-	border-radius:5px;
-	padding:25px;
-	text-align:center;
-	font:20pt bold,"Vollkorn";color:#bbb
-}
-#b64data{
-	width:100%;
-}
+
 </style>
 </head>
 <body>
 <b>JS-XLS (BIFF5/BIFF8/XML) Live Demo</b><br />
-Output Format:
-<select name="format">
-<option value="csv" selected> CSV</option>
-<option value="json"> JSON</option>
-<option value="form"> FORMULAE</option>
-</select><br />
-<!--<input type="radio" name="format" value="csv" checked> CSV<br>
-<input type="radio" name="format" value="json"> JSON<br>
-<input type="radio" name="format" value="form"> FORMULAE<br> -->
 
-<div id="drop">Drop an XLS or XML (2003) file here to see sheet data.</div>
 <p><input type="file" name="xlfile" id="xlf" /> ... or click here to select a file</p>
 
 <pre id="out"></pre>
