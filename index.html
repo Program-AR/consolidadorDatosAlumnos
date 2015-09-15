@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<!-- xls.js (C) 2013-2015 SheetJS http://sheetjs.com -->
+<!-- vim: set ts=2: -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>JS-XLS Live Demo</title>
+<style>
+#drop{
+	border:2px dashed #bbb;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	padding:25px;
+	text-align:center;
+	font:20pt bold,"Vollkorn";color:#bbb
+}
+#b64data{
+	width:100%;
+}
+</style>
+</head>
+<body>
+<b>JS-XLS (BIFF5/BIFF8/XML) Live Demo</b><br />
+Output Format:
+<select name="format">
+<option value="csv" selected> CSV</option>
+<option value="json"> JSON</option>
+<option value="form"> FORMULAE</option>
+</select><br />
+<!--<input type="radio" name="format" value="csv" checked> CSV<br>
+<input type="radio" name="format" value="json"> JSON<br>
+<input type="radio" name="format" value="form"> FORMULAE<br> -->
+
+<div id="drop">Drop an XLS or XML (2003) file here to see sheet data.</div>
+<p><input type="file" name="xlfile" id="xlf" /> ... or click here to select a file</p>
+
+<pre id="out"></pre>
+<br />
+<!-- uncomment the next line here and in xlsworker.js for encoding support -->
+<!--<script src="dist/cpexcel.js"></script>-->
+<script src="shim.js"></script>
+<script src="xls.js"></script>
+<script>
+var X = XLS;
+var XW = {
+	/* worker message */
+	msg: 'xls',
+	/* worker scripts */
+	rABS: './xlsworker2.js',
+	norABS: './xlsworker1.js',
+	noxfer: './xlsworker.js'
+};
+
+var rABS = typeof FileReader !== "undefined" && typeof FileReader.prototype !== "undefined" && typeof FileReader.prototype.readAsBinaryString !== "undefined";
+var use_worker = typeof Worker !== 'undefined';
+var transferable = use_worker;
+
+var wtf_mode = false;
+
+function fixdata(data) {
+	var o = "", l = 0, w = 10240;
+	for(; l<data.byteLength/w; ++l) o+=String.fromCharCode.apply(null,new Uint8Array(data.slice(l*w,l*w+w)));
+	o+=String.fromCharCode.apply(null, new Uint8Array(data.slice(l*w)));
+	return o;
+}
+
+function ab2str(data) {
+	var o = "", l = 0, w = 10240;
+	for(; l<data.byteLength/w; ++l) o+=String.fromCharCode.apply(null,new Uint16Array(data.slice(l*w,l*w+w)));
+	o+=String.fromCharCode.apply(null, new Uint16Array(data.slice(l*w)));
+	return o;
+}
+
+function s2ab(s) {
+	var b = new ArrayBuffer(s.length*2), v = new Uint16Array(b);
+	for (var i=0; i != s.length; ++i) v[i] = s.charCodeAt(i);
+	return [v, b];
+}
+
+function xw_noxfer(data, cb) {
+	var worker = new Worker(XW.noxfer);
+	worker.onmessage = function(e) {
+		switch(e.data.t) {
+			case 'ready': break;
+			case 'e': console.error(e.data.d); break;
+			case XW.msg: cb(JSON.parse(e.data.d)); break;
+		}
+	};
+	var arr = rABS ? data : btoa(fixdata(data));
+	worker.postMessage({d:arr,b:rABS});
+}
+
+function xw_xfer(data, cb) {
+	var worker = new Worker(rABS ? XW.rABS : XW.norABS);
+	worker.onmessage = function(e) {
+		switch(e.data.t) {
+			case 'ready': break;
+			case 'e': console.error(e.data.d); break;
+			default: xx=ab2str(e.data).replace(/\n/g,"\\n").replace(/\r/g,"\\r"); console.log("done"); cb(JSON.parse(xx)); break;
+		}
+	};
+	if(rABS) {
+		var val = s2ab(data);
+		worker.postMessage(val[1], [val[1]]);
+	} else {
+		worker.postMessage(data, [data]);
+	}
+}
+
+function xw(data, cb) {
+	if(transferable) xw_xfer(data, cb);
+	else xw_noxfer(data, cb);
+}
+
+
+function leerTexto(hoja,celda){
+	if (!hoja[celda]) return "";
+	return hoja[celda].v;
+}
+
+function enum2From(x,y){
+	var ns = [];
+	for(var i=x; i<=y; i+=2){
+		ns.push(i);
+	}
+	return ns;
+}
+
+function leerChoice(hoja,n1,n2){
+	var respuestas = enum2From(n1,n2)
+		.filter(function(n){ 
+			return leerTexto(hoja,'C'+n) !== ""})
+		.map(function(n){
+			return leerTexto(hoja,'D'+n)})
+	return respuestas + leerTexto(hoja,'E'+n2); // Otro:
+}
+
+var listaPostA = function(hoja1){ 
+	return 	[
+		leerTexto(hoja1,'B4'),
+		leerTexto(hoja1,'B8'),
+		leerTexto(hoja1,'B12'),
+		leerTexto(hoja1,'B15'),
+		leerTexto(hoja1,'B18'),
+		leerTexto(hoja1,'B41'),
+		leerTexto(hoja1,'B52'), //Pregunta 1
+		leerTexto(hoja1,'B76'),
+		leerTexto(hoja1,'B109'),
+		leerChoice(hoja1,126,150), // Pregunta 4
+		leerTexto(hoja1,'E155'),
+		leerTexto(hoja1,'B169'),
+		leerTexto(hoja1,'B188'),
+		leerTexto(hoja1,'B193'),
+		leerTexto(hoja1,'B209'),
+		leerTexto(hoja1,'E235')
+	]};
+
+function respuestasDe(workbook,lista){
+	var hoja1 = workbook.Sheets[workbook.SheetNames[0]];
+	return lista(hoja1);
+}
+
+function process_wb(wb) {
+	if(use_worker) XLS.SSF.load_table(wb.SSF);
+	var output = "";
+	/*switch(get_radio_value("format")) {
+		case "json":
+			output = JSON.stringify(to_json(wb), 2, 2);
+			break;
+		case "form":
+			output = to_formulae(wb);
+			break;
+		default:
+			output = to_csv(wb);
+	}*/
+	output = respuestasDe(wb,listaPostA).toString();
+	if(out.innerText === undefined) out.textContent = output;
+	else out.innerText = output;
+	if(typeof console !== 'undefined') console.log("output", new Date());
+}
+
+var xlf = document.getElementById('xlf');
+function handleFile(e) {
+	var files = e.target.files;
+	var f = files[0];
+	{
+		var reader = new FileReader();
+		var name = f.name;
+		reader.onload = function(e) {
+			if(typeof console !== 'undefined') console.log("onload", new Date(), rABS, use_worker);
+			var data = e.target.result;
+			if(use_worker) {
+				xw(data, process_wb);
+			} else {
+				var wb;
+				if(rABS) {
+					wb = X.read(data, {type: 'binary'});
+				} else {
+					var arr = fixdata(data);
+					wb = X.read(btoa(arr), {type: 'base64'});
+				}
+				process_wb(wb);
+			}
+		};
+		if(rABS) reader.readAsBinaryString(f);
+		else reader.readAsArrayBuffer(f);
+	}
+}
+
+if(xlf.addEventListener) xlf.addEventListener('change', handleFile, false);
+
+</script>
+</body>
+</html>
