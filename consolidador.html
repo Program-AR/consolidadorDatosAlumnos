@@ -4,32 +4,40 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>JS-XLS Live Demo</title>
-<style>
-
-</style>
+<title>Consolidador de Datos</title>
+ <link rel="stylesheet" type="text/css" href="styles/tablaLinda.css"/>
 </head>
 <body>
-<b>JS-XLS (BIFF5/BIFF8/XML) Live Demo</b><br />
-
-<p><input type="file" name="xlfile" id="xlf" multiple /> ... or click here to select a file</p>
+<b>Consolidador de datos para Pre Tests y Post Tests</b><br />
+Modo de uso:<br />
+	<ol>
+		<li>Presionar Examinar</li>
+		<li>En la ventana emergente, elegir los archivos a cargar. Cada archivo deberá corresponder a un cuestionario.
+		<br /> Notar que manteniendo presionado Shift se pueden elegir grupos de archivos.
+		<br /> También se puede mantener presionada la tecla Ctrl para elegir individualmente varios archivos a la vez.
+		</li>
+		<li>Click en "Abrir" ó "Aceptar"</li>
+		<li>La lista se cargará, y podrá ser copiada manualmente al Google Doc correspondiente</li>
+		<li>Si faltó algún archivo, puede presionarse nuevamente "Examinar..."</li>
+	</ol>
+<p><input type="file" name="xlfile" id="xlf" multiple /> </p>
 
 <pre id="out"></pre>
-<table id="respuestas"></table>
+<table id="respuestas" cellspacing='0'></table>
 <br />
 <!-- uncomment the next line here and in xlsworker.js for encoding support -->
 <!--<script src="dist/cpexcel.js"></script>-->
-<script src="shim.js"></script>
-<script src="xls.js"></script>
+<script src="scripts/shim.js"></script>
+<script src="scripts/xls.js"></script>
 <script>
 var X = XLS;
 var XW = {
 	/* worker message */
 	msg: 'xls',
 	/* worker scripts */
-	rABS: './xlsworker2.js',
-	norABS: './xlsworker1.js',
-	noxfer: './xlsworker.js'
+	rABS: './scripts/xlsworker2.js',
+	norABS: './scripts/xlsworker1.js',
+	noxfer: './scripts/xlsworker.js'
 };
 
 var rABS = typeof FileReader !== "undefined" && typeof FileReader.prototype !== "undefined" && typeof FileReader.prototype.readAsBinaryString !== "undefined";
@@ -116,7 +124,7 @@ function leerChoice(hoja,n1,n2){
 	return respuestas + leerTexto(hoja,'E'+n2); // Otro:
 }
 
-var listaPostA = function(hoja1){ 
+var listaPostE = function(hoja1){ 
 	return 	[
 		leerTexto(hoja1,'B4'),
 		leerTexto(hoja1,'B8'),
@@ -158,7 +166,7 @@ function agregarFila(lista){
 
 function process_wb(wb) {
 	if(use_worker) XLS.SSF.load_table(wb.SSF);
-	agregarFila(respuestasDe(wb,listaPostA));
+	agregarFila(respuestasDe(wb,listaPostE));
 }
 
 var xlf = document.getElementById('xlf');
@@ -170,7 +178,6 @@ function handleFile(e) {
 		var reader = new FileReader();
 		var name = f.name;
 		reader.onload = function(e) {
-			if(typeof console !== 'undefined') console.log("onload", new Date(), rABS, use_worker);
 			var data = e.target.result;
 			if(use_worker) {
 				xw(data, process_wb);
