@@ -12,9 +12,10 @@
 <body>
 <b>JS-XLS (BIFF5/BIFF8/XML) Live Demo</b><br />
 
-<p><input type="file" name="xlfile" id="xlf" /> ... or click here to select a file</p>
+<p><input type="file" name="xlfile" id="xlf" multiple /> ... or click here to select a file</p>
 
 <pre id="out"></pre>
+<table id="respuestas"></table>
 <br />
 <!-- uncomment the next line here and in xlsworker.js for encoding support -->
 <!--<script src="dist/cpexcel.js"></script>-->
@@ -140,30 +141,32 @@ function respuestasDe(workbook,lista){
 	return lista(hoja1);
 }
 
+function crearTabla(){
+	var table = document.getElementById("respuestas");
+    var row = table.insertRow(0);
+    var cell1 = row.insertCell(0);
+     cell1.innerHTML = "NEW CELL1";
+}
+
+function agregarFila(lista){
+    var table = document.getElementById("respuestas");
+    var row = table.insertRow(table.rows.length);
+    for(var i=0; i< lista.length; i++){
+    	row.insertCell(i).innerHTML = lista[i];
+    };
+}
+
 function process_wb(wb) {
 	if(use_worker) XLS.SSF.load_table(wb.SSF);
-	var output = "";
-	/*switch(get_radio_value("format")) {
-		case "json":
-			output = JSON.stringify(to_json(wb), 2, 2);
-			break;
-		case "form":
-			output = to_formulae(wb);
-			break;
-		default:
-			output = to_csv(wb);
-	}*/
-	output = respuestasDe(wb,listaPostA).toString();
-	if(out.innerText === undefined) out.textContent = output;
-	else out.innerText = output;
-	if(typeof console !== 'undefined') console.log("output", new Date());
+	agregarFila(respuestasDe(wb,listaPostA));
 }
 
 var xlf = document.getElementById('xlf');
 function handleFile(e) {
 	var files = e.target.files;
-	var f = files[0];
-	{
+	crearTabla();
+	for (var i=0; i<files.length; i++)	{
+		var f = files[i];
 		var reader = new FileReader();
 		var name = f.name;
 		reader.onload = function(e) {
@@ -184,7 +187,7 @@ function handleFile(e) {
 		};
 		if(rABS) reader.readAsBinaryString(f);
 		else reader.readAsArrayBuffer(f);
-	}
+	};
 }
 
 if(xlf.addEventListener) xlf.addEventListener('change', handleFile, false);
