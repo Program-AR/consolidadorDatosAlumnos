@@ -30,16 +30,17 @@
 	<!-- uncomment the next line here and in xlsworker.js for encoding support -->
 	<!--<script src="dist/cpexcel.js"></script>-->
 	<script src="scripts/shim.js"></script>
-	<script src="scripts/xls.js"></script>
+	<script src="scripts/xlsx.js"></script>
+	<script src="scripts/ods.js"></script>
 	<script>
 		var X = XLS;
 		var XW = {
 			/* worker message */
 			msg: 'xls',
 			/* worker scripts */
-			rABS: './scripts/xlsworker2.js',
-			norABS: './scripts/xlsworker1.js',
-			noxfer: './scripts/xlsworker.js'
+			rABS: './scripts/xlsxworker2.js',
+			norABS: './scripts/xlsxworker1.js',
+			noxfer: './scripts/xlsxworker.js'
 		};
 
 		var rABS = typeof FileReader !== "undefined" && typeof FileReader.prototype !== "undefined" && typeof FileReader.prototype.readAsBinaryString !== "undefined";
