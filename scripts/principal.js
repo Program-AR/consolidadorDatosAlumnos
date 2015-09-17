@@ -14,6 +14,8 @@ var transferable = use_worker;
 
 var wtf_mode = false;
 
+var respuestasAlumnos = { PreE:[], PreC:[], PostE:[], PostC:[] };
+
 function fixdata(data) {
 	var o = "", l = 0, w = 10240;
 	for(; l<data.byteLength/w; ++l) o+=String.fromCharCode.apply(null,new Uint8Array(data.slice(l*w,l*w+w)));
@@ -174,14 +176,17 @@ function listaPara(workbook){
 }
 
 function crearHeader(tabla,workbook){
+	document.getElementsByClassName(idTest(workbook))[0].hidden=false;
+
 	var hoja2 = workbook.Sheets[workbook.SheetNames[1]];
 	var columnas = [];
 	var celdas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	for(var i=0; celdas.length < i && leerTexto(celdas[i]+1) !== ""; i++){
-		columnas.push(leerTexto(celdas[i]+1));
+	for(var i=0; celdas.length > i && (leerTexto(hoja2,celdas[i]+1) !== ""); i++){
+		columnas.push(leerTexto(hoja2,celdas[i]+1));
 	};
 	agregarFila(tabla.createTHead(),columnas);
 	tabla.appendChild(document.createElement('tbody'));
+	respuestasAlumnos[idTest(workbook)].push(columnas);
 }
 
 function tablaPara(workbook){
@@ -200,6 +205,7 @@ function agregarFila(table,lista){
 function process_wb(wb) {
 	if(use_worker) XLS.SSF.load_table(wb.SSF);
 	agregarFila(tablaPara(wb).tBodies[0],listaPara(wb));
+	respuestasAlumnos[idTest(wb)].push(listaPara(wb));
 }
 
 var xlf = document.getElementById('xlf');

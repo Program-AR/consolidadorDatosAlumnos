@@ -25,9 +25,13 @@
 
 
 	<pre id="out"></pre>
+	<b class="PreE" hidden> Previo Experimental </b>
 	<table id="PreE" cellspacing='0'></table>
+	<b class="PreC" hidden> Previo de Control </b>
 	<table id="PreC" cellspacing='0'></table>
-	<table id="PostE" cellspacing='0'></table>
+	<b class="PostE" hidden> Posterior Experimental </b>
+	<table  id="PostE" cellspacing='0'></table>
+	<b class="PostC" hidden> Posterior de Control </b>
 	<table id="PostC" cellspacing='0'></table>
 	<br />
 	<!-- uncomment the next line here and in xlsworker.js for encoding support -->
@@ -35,7 +39,11 @@
 	<script src="scripts/shim.js"></script>
 	<script src="scripts/xlsx.js"></script>
 	<script src="scripts/ods.js"></script>
+
+	<div id="loader">
+		<img id="spinner" src="styles/spinnerGrande.GIF" />
+	</div>
+
 	<script src="scripts/principal.js"></script>
-	
 </body>
 </html>
