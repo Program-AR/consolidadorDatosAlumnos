@@ -22,7 +22,7 @@
 		<li>Si faltó algún archivo, puede presionarse nuevamente "Examinar..."</li>
 	</ol>
 	<p><input type="file" name="xlfile" id="xlf" multiple /> </p>
-	<p><input type="button" id="botonExportar" value="Exportar a xls" onclick="exportarAXLS(respuestasAlumnos)" disabled/></p>
+	<p><input type="button" id="botonExportar" value="Exportar a xlsx" onclick="exportarAXLS(respuestasAlumnos)" disabled/></p>
 
 
 	<pre id="out"></pre>
@@ -41,6 +41,7 @@
 	<script src="scripts/jszip.js"></script>
 	<script src="scripts/xlsx.js"></script>
 	<script src="scripts/ods.js"></script>
+	<script src="scripts/FileSaver.js"></script>
 
 	<div id="loader">
 		<img id="spinner" src="styles/spinnerGrande.GIF" />

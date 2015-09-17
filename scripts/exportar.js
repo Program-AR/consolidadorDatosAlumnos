@@ -44,6 +44,13 @@ function agregarHoja(wb, ws_name, listalistas){
 	wb.Sheets[ws_name] = ws;
 }
 
+function s2ab2(s) {
+  var buf = new ArrayBuffer(s.length);
+  var view = new Uint8Array(buf);
+  for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+  return buf;
+}
+
 function exportarAXLS(respuestas){
 	var wb = new Workbook();
 
@@ -52,9 +59,13 @@ function exportarAXLS(respuestas){
 	agregarHoja(wb,"PostE",respuestas.PostE);
 	agregarHoja(wb,"PostC",respuestas.PostC);
 
-	var filename = "ConsolidadoTestsAlumnos.xls"
-	XLS.writeFile(wb, filename)
+	var filename = "ConsolidadoTestsAlumnos.xlsx"
 
-	window.alert("Finalizo Exportacion. Archivo Destino: " + filename);
+	var wopts = { bookType:'xlsx', bookSST:false, type:'binary' };
 
+	var wbout = XLSX.write(wb,wopts);
+
+
+	/* the saveAs call downloads a file on the local machine */
+	saveAs(new Blob([s2ab2(wbout)],{type:""}), filename);
 }
