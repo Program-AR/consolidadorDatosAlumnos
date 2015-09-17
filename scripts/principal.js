@@ -233,6 +233,7 @@ function handleFile(e) {
 		if(rABS) reader.readAsBinaryString(f);
 		else reader.readAsArrayBuffer(f);
 	};
+	document.getElementById("botonExportar").disabled = false;
 }
 
 if(xlf.addEventListener) xlf.addEventListener('change', handleFile, false);

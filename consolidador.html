@@ -22,6 +22,7 @@
 		<li>Si faltó algún archivo, puede presionarse nuevamente "Examinar..."</li>
 	</ol>
 	<p><input type="file" name="xlfile" id="xlf" multiple /> </p>
+	<p><input type="button" id="botonExportar" value="Exportar a xls" onclick="exportarAXLS(respuestasAlumnos)" disabled/></p>
 
 
 	<pre id="out"></pre>
@@ -37,6 +38,7 @@
 	<!-- uncomment the next line here and in xlsworker.js for encoding support -->
 	<!--<script src="dist/cpexcel.js"></script>-->
 	<script src="scripts/shim.js"></script>
+	<script src="scripts/jszip.js"></script>
 	<script src="scripts/xlsx.js"></script>
 	<script src="scripts/ods.js"></script>
 
@@ -45,5 +47,6 @@
 	</div>
 
 	<script src="scripts/principal.js"></script>
+	<script src="scripts/exportar.js"></script>
 </body>
 </html>
