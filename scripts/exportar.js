@@ -54,10 +54,10 @@ function s2ab2(s) {
 function exportarAXLS(respuestas){
 	var wb = new Workbook();
 
-	agregarHoja(wb,"PreE",respuestas.PreE);
-	agregarHoja(wb,"PreC",respuestas.PreC);
-	agregarHoja(wb,"PostE",respuestas.PostE);
-	agregarHoja(wb,"PostC",respuestas.PostC);
+	agregarHoja(wb,"PreA",respuestas.PreA);
+	agregarHoja(wb,"PreB",respuestas.PreB);
+	agregarHoja(wb,"PostA",respuestas.PostA);
+	agregarHoja(wb,"PostB",respuestas.PostB);
 
 	var filename = "ConsolidadoTestsAlumnos.xlsx"
 

@@ -8,13 +8,13 @@ var XW = {
 	noxfer: './scripts/xlsxworker.js'
 };
 
-var rABS = typeof FileReader !== "undefined" && typeof FileReader.prototype !== "undefined" && typeof FileReader.prototype.readAsBinaryString !== "undefined";
-var use_worker = typeof Worker !== 'undefined';
+var rABS = false;//typeof FileReader !== "undefined" && typeof FileReader.prototype !== "undefined" && typeof FileReader.prototype.readAsBinaryString !== "undefined";
+var use_worker = false;//typeof Worker !== 'undefined';
 var transferable = use_worker;
 
 var wtf_mode = false;
 
-var respuestasAlumnos = { PreE:[], PreC:[], PostE:[], PostC:[] };
+var respuestasAlumnos = { PreA:[], PreB:[], PostA:[], PostB:[] };
 
 function fixdata(data) {
 	var o = "", l = 0, w = 10240;
@@ -90,15 +90,20 @@ function leerChoice(hoja,n1,n2){
 		.filter(function(n){ 
 			return leerTexto(hoja,'C'+n) !== ""})
 		.map(function(n){
-			return leerTexto(hoja,'D'+n) + ";"});
-	if(respuestas[respuestas.length-1]==" Otro: ;")
+			return leerTexto(hoja,'D'+n) + ","});
+	if(respuestas[respuestas.length-1]==" Otro: ," || leerTexto(hoja,'E150') != ""){
 		respuestas.pop();
-		respuestas.push(" Otro: " + leerTexto(hoja,'E'+n2));
+		respuestas.push(" Otro: " + leerTexto(hoja,'E'+n2))
+	};
 
 	var concatenacion = "";
 	for (var i=0; i < respuestas.length; i++){
 		concatenacion += respuestas[i];
 	};
+
+	if(concatenacion.slice(-1)==","){
+		concatenacion = concatenacion.slice(0,concatenacion.length-1);
+	}
 	return concatenacion;
 }
 
@@ -109,7 +114,7 @@ function idTest(workbook){
 function listaPara(workbook){ 
 	var hoja1 = workbook.Sheets[workbook.SheetNames[0]];
 	var listas = {};
-	listas.PreE = function(){return[ 
+	listas.PreA = function(){return[ 
 		leerTexto(hoja1,'B4'),
         leerTexto(hoja1,'B8'),
         leerTexto(hoja1,'B12'),
@@ -123,7 +128,7 @@ function listaPara(workbook){
         leerTexto(hoja1,'E155'),
         leerTexto(hoja1,'B169'),
         leerTexto(hoja1,'B174')]};
-	listas.PreC = function(){return[
+	listas.PreB = function(){return[
 		leerTexto(hoja1,'B4'),
         leerTexto(hoja1,'B8'),
         leerTexto(hoja1,'B12'),
@@ -137,7 +142,7 @@ function listaPara(workbook){
         leerTexto(hoja1,'E155'),
         leerTexto(hoja1,'B169'),
         leerTexto(hoja1,'B176')]};
-	listas.PostE = function(){return[ 
+	listas.PostA = function(){return[ 
 		leerTexto(hoja1,'B4'),
         leerTexto(hoja1,'B8'),
         leerTexto(hoja1,'B12'),
@@ -154,7 +159,7 @@ function listaPara(workbook){
 		leerTexto(hoja1,'B209'),
 		leerTexto(hoja1,'E235'),
 		leerTexto(hoja1,'B188')]};
-	listas.PostC = function(){return[ 
+	listas.PostB = function(){return[ 
 		leerTexto(hoja1,'B4'),
         leerTexto(hoja1,'B8'),
         leerTexto(hoja1,'B12'),
@@ -181,10 +186,10 @@ function crearHeader(tabla,workbook){
 	var hoja2 = workbook.Sheets[workbook.SheetNames[1]];
 	var columnas = [];
 	var celdas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	for(var i=0; celdas.length > i && (leerTexto(hoja2,celdas[i]+1) !== ""); i++){
+	/*for(var i=0; celdas.length > i && (leerTexto(hoja2,celdas[i]+1) !== ""); i++){
 		columnas.push(leerTexto(hoja2,celdas[i]+1));
 	};
-	agregarFila(tabla.createTHead(),columnas);
+	agregarFila(tabla.createTHead(),columnas);*/
 	tabla.appendChild(document.createElement('tbody'));
 	respuestasAlumnos[idTest(workbook)].push(columnas);
 }
