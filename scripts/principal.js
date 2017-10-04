@@ -108,7 +108,9 @@ function leerChoice(hoja,n1,n2){
 }
 
 function idTest(workbook){
-	return leerTexto(workbook.Sheets[workbook.SheetNames[0]],'A22');
+	var id = leerTexto(workbook.Sheets[workbook.SheetNames[0]], 'A22')
+	if(id ==="") return leerTexto(workbook.Sheets[workbook.SheetNames[0]], 'A21'); //El puto ods lee mal
+	return id;
 }
 
 function listaPara(workbook){ 

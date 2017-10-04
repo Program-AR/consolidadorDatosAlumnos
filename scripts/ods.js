@@ -274,6 +274,7 @@ var parse_content_xml = (function() {
 						case 'date': q.t = 'n'; q.v = datenum(ctag['date-value']); q.z = 'm/d/yy'; break;
 						case 'time': q.t = 'n'; q.v = parse_isodur(ctag['time-value'])/86400; break;
 						case 'string': q.t = 's'; break;
+						case undefined: q.t = 's'; q.v=""; break; //Case empty cell or with image
 						default: throw new Error('Unsupported value type ' + q.t);
 					}
 				} else {
